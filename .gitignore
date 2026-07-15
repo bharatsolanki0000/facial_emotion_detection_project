@@ -8,7 +8,6 @@ test/
 
 # Ignore large files/models
 fer13_full_dataset.zip
-*.keras
 
 # Ignore environment folders
 venv/
