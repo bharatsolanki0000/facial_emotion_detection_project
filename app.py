@@ -10,16 +10,24 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 # ---------------------------------------------------------
 st.set_page_config(page_title="Facial Emotion Detection", page_icon="🙂", layout="centered")
 
+# Use a safer way to access secrets
+turn_username = st.secrets.get("turn", {}).get("username")
+turn_credential = st.secrets.get("turn", {}).get("credential")
+
+# Configure only with valid credentials
 rtc_configuration = RTCConfiguration({
     "iceServers": [
-        {"urls": "stun:free.expressturn.com:3478"},
         {
             "urls": "turn:free.expressturn.com:3478",
-            "username": st.secrets["turn"]["username"],
-            "credential": st.secrets["turn"]["credential"],
-        },
+            "username": turn_username,
+            "credential": turn_credential,
+        }
     ]
 })
+
+# Add a warning if secrets are missing so you know why it might hang
+if not turn_username or not turn_credential:
+    st.error("TURN server credentials not found in Streamlit Secrets. WebRTC may fail.")
 
 # ---------------------------------------------------------
 # CLASS LABELS & COLORS
@@ -35,18 +43,7 @@ emotion_colors = {
     "Surprise": (0, 0, 0),       # Black
 }
 
-# ---------------------------------------------------------
-# RTC CONFIGURATION (STUN + TURN for reliable browser<->server connection)
-# ---------------------------------------------------------
-RTC_CONFIGURATION = RTCConfiguration(
-    {
-        "iceServers": [
-            {
-                "urls": ["stun:stun.l.google.com:19302"]
-            }
-        ]
-    }
-)
+
 
 # ---------------------------------------------------------
 # LOAD MODEL & CASCADES (Cached)
