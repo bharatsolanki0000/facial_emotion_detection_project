@@ -25,6 +25,32 @@ emotion_colors = {
 }
 
 # ---------------------------------------------------------
+# RTC CONFIGURATION (STUN + TURN for reliable browser<->server connection)
+# ---------------------------------------------------------
+RTC_CONFIGURATION = RTCConfiguration(
+    {
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]},
+            {
+                "urls": ["turn:openrelay.metered.ca:80"],
+                "username": "openrelayproject",
+                "credential": "openrelayproject",
+            },
+            {
+                "urls": ["turn:openrelay.metered.ca:443"],
+                "username": "openrelayproject",
+                "credential": "openrelayproject",
+            },
+            {
+                "urls": ["turn:openrelay.metered.ca:443?transport=tcp"],
+                "username": "openrelayproject",
+                "credential": "openrelayproject",
+            },
+        ]
+    }
+)
+
+# ---------------------------------------------------------
 # LOAD MODEL & CASCADES (Cached)
 # ---------------------------------------------------------
 @st.cache_resource
@@ -98,9 +124,7 @@ if mode == "Live Webcam":
     webrtc_streamer(
         key="emotion-detection",
         video_frame_callback=video_frame_callback,
-        rtc_configuration=RTCConfiguration(
-            {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-        ),
+        rtc_configuration=RTC_CONFIGURATION,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
@@ -123,6 +147,6 @@ st.markdown(
     <div style="text-align: center;">
         <p>Built by <b>Bharat Solanki</b> | 🇮🇳 Made in Bharat</p>
     </div>
-    """, 
+    """,
     unsafe_allow_html=True
 )
