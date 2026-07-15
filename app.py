@@ -108,13 +108,18 @@ mode = st.radio("Choose input mode", ["Live Webcam", "Upload Image"], horizontal
 
 if mode == "Live Webcam":
     st.info("Click **START** and allow camera access.")
-    webrtc_streamer(
-        key="emotion-detection",
-        video_frame_callback=video_frame_callback,
-        rtc_configuration=RTC_CONFIGURATION,
-        media_stream_constraints={"video": True, "audio": True},
-        async_processing=True,
-    )
+    webrtc_ctx = webrtc_streamer(
+    key="emotion-detection",
+    video_frame_callback=video_frame_callback,
+    rtc_configuration=RTC_CONFIGURATION,
+    media_stream_constraints={"video": True, "audio": False},
+    async_processing=True,
+)
+
+if webrtc_ctx.state.playing:
+    st.success("✅ Camera connected and streaming")
+else:
+    st.warning(f"Not playing yet — state: {webrtc_ctx.state}")
 
 else:
     uploaded_file = st.file_uploader("Upload a photo", type=["jpg", "jpeg", "png"])
