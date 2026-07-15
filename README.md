@@ -84,7 +84,7 @@ source venv/bin/activate        # On Windows: venv\Scripts\activate
 ### 3. Install dependencies
 
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ### 4. Train / add the model
@@ -98,6 +98,23 @@ streamlit run app.py
 ```
 
 The app will open in your browser at `http://localhost:8501`.
+
+---
+
+## ☁️ Deploy on Streamlit Community Cloud
+
+1. Push this repository to GitHub.
+2. Make sure these files are in the repo root:
+  - `app.py`
+  - `requirements.txt`
+  - `runtime.txt`
+  - `packages.txt`
+  - `emotion_model.keras`
+3. Open Streamlit Community Cloud and create a new app from this repository.
+4. Set the main file path to `app.py`.
+5. Deploy the app.
+
+If deployment fails with a TensorFlow install error, keep `runtime.txt` pinned to Python 3.11 so Streamlit Cloud does not choose a newer Python version that TensorFlow does not support.
 
 ---
 
