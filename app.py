@@ -10,6 +10,17 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 # ---------------------------------------------------------
 st.set_page_config(page_title="Facial Emotion Detection", page_icon="🙂", layout="centered")
 
+rtc_configuration = RTCConfiguration({
+    "iceServers": [
+        {"urls": "stun:free.expressturn.com:3478"},
+        {
+            "urls": "turn:free.expressturn.com:3478",
+            "username": st.secrets["turn"]["username"],
+            "credential": st.secrets["turn"]["credential"],
+        },
+    ]
+})
+
 # ---------------------------------------------------------
 # CLASS LABELS & COLORS
 # ---------------------------------------------------------
@@ -111,7 +122,7 @@ if mode == "Live Webcam":
     webrtc_ctx = webrtc_streamer(
         key="emotion-detection",
         video_frame_callback=video_frame_callback,
-        rtc_configuration=RTC_CONFIGURATION,
+        rtc_configuration=rtc_configuration,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
