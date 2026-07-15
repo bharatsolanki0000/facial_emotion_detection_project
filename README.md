@@ -8,7 +8,7 @@ A real-time facial emotion recognition app built with **TensorFlow/Keras**, **Op
 
 | Sample 1 | Sample 2 |
 |---|---|
-| ![demo1](test_emotion_images.jpg) | ![demo2](test_emotion_images2.jpg) |
+| ![input](test_emotion_images.jpg) | ![output](output_image.jpg) |
 
 ---
 
@@ -121,26 +121,6 @@ The app will open in your browser at `http://localhost:8501`.
   - `model_main.ipynb` — CNN architecture, training, and evaluation
   - `live_main.ipynb` — real-time inference testing
 
----
-
-## 🗺️ Roadmap
-
-- [ ] Add pre-trained `emotion_model.keras` to releases
-- [ ] Deploy a live demo (Streamlit Community Cloud / Hugging Face Spaces)
-- [ ] Improve accuracy with a deeper CNN or transfer learning
-- [ ] Add batch video file support
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-This project is open-sourced under the [MIT License](LICENSE).
 
 ---
 
