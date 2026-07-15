@@ -30,22 +30,9 @@ emotion_colors = {
 RTC_CONFIGURATION = RTCConfiguration(
     {
         "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]},
             {
-                "urls": ["turn:openrelay.metered.ca:80"],
-                "username": "openrelayproject",
-                "credential": "openrelayproject",
-            },
-            {
-                "urls": ["turn:openrelay.metered.ca:443"],
-                "username": "openrelayproject",
-                "credential": "openrelayproject",
-            },
-            {
-                "urls": ["turn:openrelay.metered.ca:443?transport=tcp"],
-                "username": "openrelayproject",
-                "credential": "openrelayproject",
-            },
+                "urls": ["stun:stun.l.google.com:19302"]
+            }
         ]
     }
 )
@@ -125,7 +112,7 @@ if mode == "Live Webcam":
         key="emotion-detection",
         video_frame_callback=video_frame_callback,
         rtc_configuration=RTC_CONFIGURATION,
-        media_stream_constraints={"video": True, "audio": False},
+        media_stream_constraints={"video": True, "audio": True},
         async_processing=True,
     )
 
