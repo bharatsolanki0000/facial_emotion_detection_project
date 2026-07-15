@@ -1,1 +1,7 @@
-streamlitstreamlit-webrtcavopencv-python-headlessnumpytensorflowkeraspillow
+streamlit==1.59.2
+streamlit-webrtc==0.76.0
+av==17.0.0
+opencv-python-headless==4.11.0.86
+numpy==1.26.4
+tensorflow==2.17.1
+pillow==10.4.0
