@@ -6,7 +6,7 @@ A real-time facial emotion recognition app built with **TensorFlow/Keras**, **Op
 
 ## 📸 Demo
 
-| Sample 1 | Sample 2 |
+| input image | output image |
 |---|---|
 | ![input](test_emotion_images2.jpg) | ![output](output_image.jpg) |
 
