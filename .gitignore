@@ -1,0 +1,15 @@
+# Ignore Python/Jupyter caches
+__pycache__/
+.ipynb_checkpoints/
+
+# Ignore large data folders
+train/
+test/
+
+# Ignore large files/models
+fer13_full_dataset.zip
+*.keras
+
+# Ignore environment folders
+venv/
+.env
