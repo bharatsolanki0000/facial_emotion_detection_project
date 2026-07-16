@@ -51,14 +51,19 @@ face_cascade = get_face_cascade()
 def get_ice_servers():
     ice_servers = [{"urls": ["stun:stun.l.google.com:19302"]}]
 
-    turn_url = os.environ.get("TURN_URL")
+    # TURN_URLS accepts a comma-separated list, e.g.:
+    #   turn:free.expressturn.com:3478?transport=tcp,turn:free.expressturn.com:443?transport=tcp
+    # TCP variants are required on Render — its network drops long-lived
+    # outbound UDP, which breaks plain UDP TURN relays (port 3478 default).
+    turn_urls_raw = os.environ.get("TURN_URLS") or os.environ.get("TURN_URL")
     turn_username = os.environ.get("TURN_USERNAME")
     turn_credential = os.environ.get("TURN_CREDENTIAL")
 
-    if turn_url and turn_username and turn_credential:
+    if turn_urls_raw and turn_username and turn_credential:
+        turn_urls = [u.strip() for u in turn_urls_raw.split(",") if u.strip()]
         ice_servers.append(
             {
-                "urls": [turn_url],
+                "urls": turn_urls,
                 "username": turn_username,
                 "credential": turn_credential,
             }
