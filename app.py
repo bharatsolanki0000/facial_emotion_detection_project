@@ -1,3 +1,4 @@
+import os
 import av
 import cv2
 import numpy as np
@@ -9,25 +10,6 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 # PAGE CONFIG
 # ---------------------------------------------------------
 st.set_page_config(page_title="Facial Emotion Detection", page_icon="🙂", layout="centered")
-
-# Use a safer way to access secrets
-turn_username = st.secrets.get("turn", {}).get("username")
-turn_credential = st.secrets.get("turn", {}).get("credential")
-
-# Configure only with valid credentials
-rtc_configuration = RTCConfiguration({
-    "iceServers": [
-        {
-            "urls": "turn:free.expressturn.com:3478",
-            "username": turn_username,
-            "credential": turn_credential,
-        }
-    ]
-})
-
-# Add a warning if secrets are missing so you know why it might hang
-if not turn_username or not turn_credential:
-    st.error("TURN server credentials not found in Streamlit Secrets. WebRTC may fail.")
 
 # ---------------------------------------------------------
 # CLASS LABELS & COLORS
@@ -43,8 +25,6 @@ emotion_colors = {
     "Surprise": (0, 0, 0),       # Black
 }
 
-
-
 # ---------------------------------------------------------
 # LOAD MODEL & CASCADES (Cached)
 # ---------------------------------------------------------
@@ -58,6 +38,33 @@ def get_face_cascade():
 
 model = get_model()
 face_cascade = get_face_cascade()
+
+# ---------------------------------------------------------
+# ICE / TURN CONFIG
+# ---------------------------------------------------------
+# STUN alone often fails once the app is hosted behind Render's cloud
+# networking. Set TURN_URL, TURN_USERNAME, TURN_CREDENTIAL as environment
+# variables on Render (Settings -> Environment) using a free TURN provider
+# such as metered.ca (https://www.metered.ca/tools/openrelay/) or Twilio NTS.
+# If they're not set, the app falls back to STUN-only (works locally, may
+# hang on "connecting" when deployed).
+def get_ice_servers():
+    ice_servers = [{"urls": ["stun:stun.l.google.com:19302"]}]
+
+    turn_url = os.environ.get("TURN_URL")
+    turn_username = os.environ.get("TURN_USERNAME")
+    turn_credential = os.environ.get("TURN_CREDENTIAL")
+
+    if turn_url and turn_username and turn_credential:
+        ice_servers.append(
+            {
+                "urls": [turn_url],
+                "username": turn_username,
+                "credential": turn_credential,
+            }
+        )
+
+    return ice_servers
 
 # ---------------------------------------------------------
 # PREDICTION & ANNOTATION LOGIC
@@ -116,18 +123,13 @@ mode = st.radio("Choose input mode", ["Live Webcam", "Upload Image"], horizontal
 
 if mode == "Live Webcam":
     st.info("Click **START** and allow camera access.")
-    webrtc_ctx = webrtc_streamer(
+    webrtc_streamer(
         key="emotion-detection",
         video_frame_callback=video_frame_callback,
-        rtc_configuration=rtc_configuration,
+        rtc_configuration=RTCConfiguration({"iceServers": get_ice_servers()}),
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
-
-    if webrtc_ctx.state.playing:
-        st.success("✅ Camera connected and streaming")
-    else:
-        st.warning(f"Not playing yet — state: {webrtc_ctx.state}")
 
 else:
     uploaded_file = st.file_uploader("Upload a photo", type=["jpg", "jpeg", "png"])
@@ -147,6 +149,6 @@ st.markdown(
     <div style="text-align: center;">
         <p>Built by <b>Bharat Solanki</b> | 🇮🇳 Made in Bharat</p>
     </div>
-    """,
+    """, 
     unsafe_allow_html=True
 )
