@@ -1,4 +1,3 @@
-import os
 import av
 import cv2
 import numpy as np
@@ -38,38 +37,6 @@ def get_face_cascade():
 
 model = get_model()
 face_cascade = get_face_cascade()
-
-# ---------------------------------------------------------
-# ICE / TURN CONFIG
-# ---------------------------------------------------------
-# STUN alone often fails once the app is hosted behind Render's cloud
-# networking. Set TURN_URL, TURN_USERNAME, TURN_CREDENTIAL as environment
-# variables on Render (Settings -> Environment) using a free TURN provider
-# such as metered.ca (https://www.metered.ca/tools/openrelay/) or Twilio NTS.
-# If they're not set, the app falls back to STUN-only (works locally, may
-# hang on "connecting" when deployed).
-def get_ice_servers():
-    ice_servers = [{"urls": ["stun:stun.l.google.com:19302"]}]
-
-    # TURN_URLS accepts a comma-separated list, e.g.:
-    #   turn:free.expressturn.com:3478?transport=tcp,turn:free.expressturn.com:443?transport=tcp
-    # TCP variants are required on Render — its network drops long-lived
-    # outbound UDP, which breaks plain UDP TURN relays (port 3478 default).
-    turn_urls_raw = os.environ.get("TURN_URLS") or os.environ.get("TURN_URL")
-    turn_username = os.environ.get("TURN_USERNAME")
-    turn_credential = os.environ.get("TURN_CREDENTIAL")
-
-    if turn_urls_raw and turn_username and turn_credential:
-        turn_urls = [u.strip() for u in turn_urls_raw.split(",") if u.strip()]
-        ice_servers.append(
-            {
-                "urls": turn_urls,
-                "username": turn_username,
-                "credential": turn_credential,
-            }
-        )
-
-    return ice_servers
 
 # ---------------------------------------------------------
 # PREDICTION & ANNOTATION LOGIC
@@ -131,7 +98,9 @@ if mode == "Live Webcam":
     webrtc_streamer(
         key="emotion-detection",
         video_frame_callback=video_frame_callback,
-        rtc_configuration=RTCConfiguration({"iceServers": get_ice_servers()}),
+        rtc_configuration=RTCConfiguration(
+            {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+        ),
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
